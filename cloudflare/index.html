@@ -1,3 +1,62 @@
 <h1>Identity</h1>
-There are no known identity files.
-Maybe wrong page?
+<p>
+私の%{general.page}へようこそ！この%{general.page}は私の%{qualification.all}のidentityを持っています。
+ただし、%{general.partially}は欠けているかもしれませんが。
+トークンをお持ちですか？<a href="#go">今すぐ入力！</a>
+</p>
+
+<h2>ソーシャル</h2>
+<h3>GitHub</h3>
+<ul>
+  <li>アカウント：<a href="https://github.com/%{github.id}/"><code>%{github.id}</code></a></li>
+</ul>
+
+<h2>In real life</h2>
+<ul>
+  <li>氏名 %{real.name}</li>
+  <li>年齢 %{real.age}</li>
+  <li>住所 %{real.pref}%{real.city}</li>
+</ul>
+
+<h2>Credit</h2>
+<p>（敬称略）</p>
+<ul>
+  <li>uhyo: 『<a href="https://zenn.dev/uhyo/articles/expunged-site">Cloudflare PagesとCloudflare Workersで██された██を作る</a>』には大変お世話になりました。</li>
+</ul>
+
+<h2>メカニズム</h2>
+<ol>
+  <li>
+    <p>まず、GitHubに静的なHTMLを置きます。</p>
+    <p>アクセス制限がついていてもいいと思います。その辺りは思想です。私はめんどうなので付けませんでした。</p>
+    <p>GitHubだと各種CI/CDとの連携が楽で、静的HTMLの最新テキストも取れるのでいい感じに回ります。</p>
+  </li>
+  <li>
+    <p>
+      次に、<a href="https://workers.cloudflare.com/">Cloudflare Workers</a>で<code>%{%(}</code>と<code>%{)}</code>に囲まれた
+      部分を置き換えます。ストレージには<a href="https://www.cloudflare.com/ja-jp/products/workers-kv/">KV</a>を使いました。
+      uhyoさんは環境変数を使っておられましたが、上記記事の中で言及されているように、入る文字が少なく、できるだけ少ない手間で実現したかったのでこうしました。
+    </p>
+    <p>プレースホルダに使う文字は何でもいいですが、<code>&lt</code>;と<code>&gt;</code>だけはやめておきましょう。HTMLとの相性が悪く地獄を見る羽目になります。あとは、このように自己言及したくなったときに困るので、それ用のプレースホルダも用意しておきましょう。</p>
+  </li>
+  <li>
+    <p>JWTを使います。このあたりはuhyoさんと同じやりかたです。</p>
+    <p>uhyoさんのスキーマでは<code>clearance</code>という整数値で分岐するようにしていましたが、私は各カテゴリごとに公開するかどうかを決めたかったので、<code>clearance</code>をカテゴリ名の配列にしました。</p>
+    <p>自分で検証処理などを書くとバグらせそうなので、uhyoさんが使っているパッケージ、@tsndr/cloudflare-worker-jwtの中身をworkersのJavaScriptに展開しました。@tsndr/cloudflare-worker-jwtのライセンスはMITなので、このページで言及しています。</p>
+  </li>
+  <li><p>最後に、<a href="https://pages.cloudflare.com/">Cloudflare Pages</a>の設定を5秒で済ませて完成です！（雑）</p></li>
+</ol>
+
+<h3>ハマったところ</h3>
+<ul>
+  <li>Cloudflare WorkerからCloudflare Workerに向かってfetchすることはできない</li>
+</ul>
+
+<p>いかがでしたか？</p>
+<hr>
+<h2 id="go">トークンをお持ちですか？</h2>
+
+<form action="/" method="get">
+  <input type="text" name="token" value="">
+  <input type="submit" value="Go">
+</form>
